@@ -15,7 +15,7 @@ There is the Run Lutron SmartApp, that you install in the IDE.
 The required hardware consists of -
   Lutron RadioRA RA-RS232, 
   Arduino Mega 2560, with, 
-  SmartThings ThingShield, 
+  SmartThings ThingShield, and
   Arduino RS232 shield.
   
   The Arduino RS232 shield connects to the RA-232 with null modem cable.
