@@ -33,13 +33,13 @@ def getSwitchCmd(myCmd, n) {
 }
 
 def getSwitchName(myName, n) {
-  def result = input myName, "text", title: "Device name #$n", required: false
+	def result = input myName, "text", title: "Device name #$n", required: false
 }
 
 def selectLutron() {
 	dynamicPage(name: "selectLutron", title: "Lutron and Devices", uninstall: true, install: true) {
 		section("Select Lutron device") {
-			input "Lutron", "capability.switchLevel", title: "Lutron device", required: true, multiple: false
+			input "Lutron", "capability.relaySwitch", title: "Lutron device", required: true, multiple: false
             input "Remove", "capability.momentary", title: "Remove button", required: true, multiple: false
             input "howMany", "number", title: "How many devices?", required: true, submitOnChange: true
 		}
@@ -86,34 +86,39 @@ def initialize() {
           subscribe(myDevice, "switch", dimOnOffHandler)
         } else subscribe(myDevice, "switch", switchHandler)
     }
-    subscribe(Lutron, "level", LutronHandler)
+    subscribe(Lutron, "msgRcvd", LutronHandler)
     subscribe(Remove, "switch.on", removeHandler)
 }
 
 def switchHandler(evt) {
-  def myDev = evt.device
-	if(evt.value == "on") Lutron.on("$myDev.name") else Lutron.off("$myDev.name")
+	def myDev = evt.device
+	if(evt.value == "on") Lutron.sendMsg("$myDev.name,on") else Lutron.sendMsg("$myDev.name,off")
 }
 
 def dimmerHandler(evt) {
-  def myDev = evt.device
-	Lutron.setLevel("$myDev.name",evt.value)
+	def myDev = evt.device
+	Lutron.sendMsg("$myDev.name,$evt.value")
 }
 
 def dimOnOffHandler(evt) {
-  def myDev = evt.device
-  def level = myDev.currentLevel ?: 100
-	if(evt.value == "on") Lutron.setLevel("$myDev.name", level) else Lutron.setLevel("$myDev.name", 0)
+	def myDev = evt.device
+	def level = myDev.currentLevel ?: 100
+	if(evt.value == "on") Lutron.sendMsg("$myDev.name,$level") else Lutron.sendMsg("$myDev.name,0")
 }
 
 def LutronHandler(evt) {
-    def ndx = evt.value.toInteger()
-    def isOff = ndx > 32
-    if(isOff) ndx = ndx - 32
-    def deviceId = state.myDevices["$ndx"]
-    def device = getChildDevice(state.myDevices["$ndx"])
-    if(isOff) device.sendEvent(name: "switch", value: "off") //, isStateChange: true, displayed: true)
-    else device.sendEvent(name: "switch", value: "on") //, isStateChange: true, displayed: true)
+    def isOff = false
+    def ndx = ""
+	if (evt.value.startsWith("LZC")) {
+		if (!evt.value.endsWith("CHG")) {
+			isOff = evt.value.endsWith("OFF")
+			ndx = evt.value.substring(4, 6)
+			if(ndx[0] == "0") ndx = ndx.substring(1)
+    	    		def device = getChildDevice(state.myDevices["$ndx"])
+			if(isOff) device.sendEvent(name: "switch", value: "off") //, isStateChange: true, displayed: true)
+			else device.sendEvent(name: "switch", value: "on") //, isStateChange: true, displayed: true)
+		}
+	}
 }
 
 def removeHandler(evt) {
@@ -121,11 +126,11 @@ def removeHandler(evt) {
 }
 
 def uninstalled() {
-  removeChildDevices(getChildDevices())
+	removeChildDevices(getChildDevices())
 }
 
 private removeChildDevices(delete) {
-  delete.each {
-    deleteChildDevice(it.deviceNetworkId)
+	delete.each {
+	deleteChildDevice(it.deviceNetworkId)
   }
 }
