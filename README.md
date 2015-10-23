@@ -1,5 +1,5 @@
-# Lutron
-SmartThings Lutron Integration
+# Lutron RadioRA 
+SmartThings Lutron RadioRa Integration
 
 There are three Device Types that you need to install in the IDE -
   Lutron Shield, 
