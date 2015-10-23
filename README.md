@@ -8,7 +8,7 @@ There are three Device Types that you need to install in the IDE:
   
 These need to be in your "My Device Types"
 
-There is the Arduino sketch, that installs on Arduino Mega 2560.
+There is the Arduino sketch, that installs on Arduino Mega 2560. 
 
 There is the Run Lutron SmartApp, that you install in the IDE.
 
