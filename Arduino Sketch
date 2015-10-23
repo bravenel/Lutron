@@ -1,0 +1,109 @@
+//*****************************************************************************
+/// @file
+/// @brief
+///   Arduino SmartThings Shield Lutron Interface 
+//*****************************************************************************
+#include <SmartThings.h>
+
+#define PIN_THING_RX    3
+#define PIN_THING_TX    2
+
+SmartThingsCallout_t messageCallout;    // call out function forward decalaration
+SmartThings smartthing(HW_SERIAL3, messageCallout);  // Hardware Serial constructor
+
+bool isDebugEnabled;    // enable or disable debug in this example
+
+void setup()
+{
+  isDebugEnabled = true;
+
+  // set the data rate for the Lutron port
+  Serial2.begin(9600);
+
+  if (isDebugEnabled)
+  { // setup debug serial port
+    Serial.begin(9600);         // setup serial with a baud rate of 9600
+    Serial.println("setup..");  // print out 'setup..' on start
+  }
+}
+
+String lutString = "";
+
+void doLutResponse()
+{  
+    if (lutString == "") return;
+    if (lutString.startsWith("LZC"))
+    {
+      if (!lutString.endsWith("CHG"))
+      {
+        int offset = 0;
+        if (lutString.endsWith("OFF")) offset = 32;
+        int newVal = lutString.substring(4).toInt() + offset;
+        smartthing.send(String(newVal));
+      }
+    }
+    lutString = "";
+}
+
+void getLutString()
+{
+  char ch = Serial2.read();
+  if (ch == 0x0D) doLutResponse();
+  else if (ch != '!') lutString += ch;
+}
+
+
+void loop()
+{
+  smartthing.run();
+  if (Serial2.available()>0) getLutString();
+}
+
+void hello()
+{
+  if (isDebugEnabled) Serial.println("Hello from ST");
+  smartthing.shieldSetLED(1, 0, 0);
+  delay(200);
+  smartthing.shieldSetLED(0, 1, 0);
+  delay(200);
+  smartthing.shieldSetLED(0, 0, 1);
+  delay(200);
+  smartthing.shieldSetLED(1, 1, 0);
+  delay(200);
+  smartthing.shieldSetLED(1, 1, 1);
+  delay(200);
+  smartthing.shieldSetLED(1, 0, 1);
+  delay(200);
+  smartthing.shieldSetLED(0, 1, 1);
+  delay(200);
+  smartthing.shieldSetLED(3, 2, 1);
+  delay(200);
+  smartthing.shieldSetLED(1, 2, 3);
+  delay(200);
+  smartthing.shieldSetLED(2, 2, 4);
+  delay(200);
+  smartthing.shieldSetLED(4, 3, 1);
+  delay(200);
+  smartthing.shieldSetLED(0, 0, 0);
+}
+
+
+void messageCallout(String message)
+{
+  if (message == "") return;
+  if (isDebugEnabled)
+  {
+    Serial.print("Received message: '");
+    Serial.print(message);
+    Serial.println("' ");
+  }
+
+  if (message.equals("hello")) 
+  {
+    hello();
+  }
+  else 
+  {    
+    Serial2.println(message);         // send command to Lutron
+  }
+}
