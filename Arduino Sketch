@@ -27,36 +27,24 @@ void setup()
   }
 }
 
-String lutString = "";
+String LutronResponse = "";
 
-void doLutResponse()
-{  
-    if (lutString == "") return;
-    if (lutString.startsWith("LZC"))
-    {
-      if (!lutString.endsWith("CHG"))
-      {
-        int offset = 0;
-        if (lutString.endsWith("OFF")) offset = 32;
-        int newVal = lutString.substring(4).toInt() + offset;
-        smartthing.send(String(newVal));
-      }
-    }
-    lutString = "";
-}
-
-void getLutString()
+void getLutronResponse()
 {
   char ch = Serial2.read();
-  if (ch == 0x0D) doLutResponse();
-  else if (ch != '!') lutString += ch;
+  if (ch == 0x0D)
+  {
+    if (LutronResponse == "") return;
+    smartthing.send(LutronResponse);
+    LutronResponse = "";
+  }
+  else if (ch != '!') LutronResponse += ch;
 }
-
 
 void loop()
 {
   smartthing.run();
-  if (Serial2.available()>0) getLutString();
+  if (Serial2.available()>0) getLutronResponse();
 }
 
 void hello()
@@ -87,7 +75,6 @@ void hello()
   smartthing.shieldSetLED(0, 0, 0);
 }
 
-
 void messageCallout(String message)
 {
   if (message == "") return;
@@ -98,12 +85,6 @@ void messageCallout(String message)
     Serial.println("' ");
   }
 
-  if (message.equals("hello")) 
-  {
-    hello();
-  }
-  else 
-  {    
-    Serial2.println(message);         // send command to Lutron
-  }
+  if (message.equals("hello")) hello();
+  else Serial2.println(message);         // send command to Lutron
 }
