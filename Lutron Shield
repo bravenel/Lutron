@@ -13,12 +13,10 @@
  */
 metadata {
 	definition (name: "Lutron Shield", namespace: "bravenel", author: "Bruce Ravenel") {
-		capability "Actuator"
-		capability "Switch"
-    capability "SwitchLevel"
-		capability "Sensor"
+        capability "RelaySwitch"
         
-    command "hello"
+        command "hello"
+        command "sendMsg"
 	}
 
 	// Simulator metadata
@@ -39,24 +37,15 @@ metadata {
 // Parse incoming device messages to generate events
 def parse(String description) {
 	def value = zigbee.parse(description)?.text
-  if(value == 0 || value == "ping") return
-  def level = value.toInteger()
-	def result = createEvent(name: "level", value: level, isStateChange: true)
+	if(value == 0 || value == "ping") return
+	def result = createEvent(name: "msgRcvd", value: value, isStateChange: true)
 	log.debug "Parse returned ${result?.descriptionText}"
 	return result
 }
 
 // Commands sent to the device
-def on(String s) {
-	zigbee.smartShield(text: "$s,on").format()
-}
-
-def off(String s) {
-	zigbee.smartShield(text: "$s,off").format()
-}
-
-def setLevel(String s, level) {
-	zigbee.smartShield(text: "$s,$level").format()
+def sendMsg(String s) {
+	zigbee.smartShield(text: s).format()
 }
 
 def hello() {
