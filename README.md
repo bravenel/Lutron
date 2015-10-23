@@ -1,7 +1,7 @@
 # Lutron
 SmartThings Lutron Integration
 
-There are three Device Types that you need to install in the IDE:
+There are three Device Types that you need to install in the IDE -
   Lutron Shield
   On/Off Button Tile
   Virtual Dimmer
@@ -12,7 +12,7 @@ There is the Arduino sketch, that installs on Arduino Mega 2560.
 
 There is the Run Lutron SmartApp, that you install in the IDE.
 
-The required hardware consists of:
+The required hardware consists of -
   Lutron RadioRA RA-RS232 
   Arduino Mega 2560, with
   SmartThings ThingShield
