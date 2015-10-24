@@ -111,8 +111,7 @@ def LutronHandler(evt) {
 		def isOff = evt.value.endsWith("OFF")
 		def ndx = evt.value.substring(4, 6)
 		if(ndx[0] == "0") ndx = ndx.substring(1)
-		def deviceId = state.myDevices["$ndx"]
-		def device = getChildDevice(deviceId)
+		def device = getChildDevice(state.myDevices["$ndx"])
 		device.sendEvent(name: "switch", value: isOff ? "off" : "on") //, isStateChange: true, displayed: true)
 	}
 }
