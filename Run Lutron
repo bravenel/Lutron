@@ -107,19 +107,16 @@ def dimOnOffHandler(evt) {
 }
 
 def LutronHandler(evt) {
-    def isOff = false
-    def ndx = ""
-	if (evt.value.startsWith("LZC")) {
-		if (!evt.value.endsWith("CHG")) {
-			isOff = evt.value.endsWith("OFF")
-			ndx = evt.value.substring(4, 6)
-			if(ndx[0] == "0") ndx = ndx.substring(1)
-    	    		def device = getChildDevice(state.myDevices["$ndx"])
-			if(isOff) device.sendEvent(name: "switch", value: "off") //, isStateChange: true, displayed: true)
-			else device.sendEvent(name: "switch", value: "on") //, isStateChange: true, displayed: true)
-		}
+	if (evt.value.startsWith("LZC") && !evt.value.endsWith("CHG")) {
+		def isOff = evt.value.endsWith("OFF")
+		def ndx = evt.value.substring(4, 6)
+		if(ndx[0] == "0") ndx = ndx.substring(1)
+		def deviceId = state.myDevices["$ndx"]
+		def device = getChildDevice(deviceId)
+		device.sendEvent(name: "switch", value: isOff ? "off" : "on") //, isStateChange: true, displayed: true)
 	}
 }
+
 
 def removeHandler(evt) {
 	unsubscribe()
