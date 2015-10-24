@@ -40,18 +40,18 @@ def selectLutron() {
 	dynamicPage(name: "selectLutron", title: "Lutron and Devices", uninstall: true, install: true) {
 		section("Select Lutron device") {
 			input "Lutron", "capability.relaySwitch", title: "Lutron device", required: true, multiple: false
-            input "Remove", "capability.momentary", title: "Remove button", required: true, multiple: false
-            input "howMany", "number", title: "How many devices?", required: true, submitOnChange: true
+			input "Remove", "capability.momentary", title: "Remove button", required: true, multiple: false
+			input "howMany", "number", title: "How many devices?", required: true, submitOnChange: true
 		}
-        section("Select Devices") {
-            for (int i = 0; i < howMany; i++) {
-                def thisVar = "switchLabel" + "$i"
-                def thisName = "switchName" + "$i"
-                getSwitchCmd(thisVar, i + 1)
-                getSwitchName(thisName, i + 1)
-            }
-        }
-    }
+		section("Select Devices") {
+			for (int i = 0; i < howMany; i++) {
+				def thisVar = "switchLabel" + "$i"
+				def thisName = "switchName" + "$i"
+				getSwitchCmd(thisVar, i + 1)
+				getSwitchName(thisName, i + 1)
+			}
+		}
+	}
 }
 
 def installed() {
@@ -66,28 +66,28 @@ def updated() {
 def initialize() {
 	state.myDevices = [:]
 	for (int i = 0 ; i < howMany; i++) {
-    	def deviceId = app.id + "Lutron" + "$i"
-        def myDevice = getChildDevice(deviceId)
-        def thisLabel = settings.find {it.key == "switchLabel$i"}
-        def thisName = settings.find {it.key == "switchName$i"}
-        if(!myDevice) {
-        	if(thisLabel.value[1] in ['d', 'D']) def childDevice = addChildDevice("smartthings", "Virtual Dimmer", deviceId, null, [label: thisName.value])
-        	else def childDevice = addChildDevice("smartthings", "On/Off Button Tile", deviceId, null, [label: thisName.value])
-        }
-        myDevice = getChildDevice(deviceId)
-        myDevice.name = thisLabel.value
-        if(myDevice.name[0] in ['s', 'S']) {        //  SSI or SDL, build map based on Lutron zone #
-        	def iloc = myDevice.name.indexOf(',') + 1
-          def ndx = myDevice.name.substring(iloc).toInteger()
-          state.myDevices << ["$ndx":deviceId]
-        }
-        if(myDevice.name[1] in ['d', 'D']) {
-        	subscribe(myDevice, "level", dimmerHandler)
-          subscribe(myDevice, "switch", dimOnOffHandler)
-        } else subscribe(myDevice, "switch", switchHandler)
-    }
-    subscribe(Lutron, "msgRcvd", LutronHandler)
-    subscribe(Remove, "switch.on", removeHandler)
+		def deviceId = app.id + "Lutron" + "$i"
+		def myDevice = getChildDevice(deviceId)
+		def thisLabel = settings.find {it.key == "switchLabel$i"}
+		def thisName = settings.find {it.key == "switchName$i"}
+		if(!myDevice) {
+			if(thisLabel.value[1] in ['d', 'D']) def childDevice = addChildDevice("smartthings", "Virtual Dimmer", deviceId, null, [label: thisName.value])
+			else def childDevice = addChildDevice("smartthings", "On/Off Button Tile", deviceId, null, [label: thisName.value])
+		}
+		myDevice = getChildDevice(deviceId)
+		myDevice.name = thisLabel.value
+		if(myDevice.name[0] in ['s', 'S']) {        //  SSI or SDL, build map based on Lutron zone #
+			def iloc = myDevice.name.indexOf(',') + 1
+			def ndx = myDevice.name.substring(iloc).toInteger()
+			state.myDevices << ["$ndx":deviceId]
+		}
+		if(myDevice.name[1] in ['d', 'D']) {
+			subscribe(myDevice, "level", dimmerHandler)
+			subscribe(myDevice, "switch", dimOnOffHandler)
+		} else subscribe(myDevice, "switch", switchHandler)
+	}
+	subscribe(Lutron, "msgRcvd", LutronHandler)
+	subscribe(Remove, "switch.on", removeHandler)
 }
 
 def switchHandler(evt) {
