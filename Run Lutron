@@ -49,6 +49,7 @@ def selectLutron() {
 				def thisName = "switchName" + "$i"
 				getSwitchCmd(thisVar, i + 1)
 				getSwitchName(thisName, i + 1)
+				paragraph(' ')
 			}
 		}
 	}
