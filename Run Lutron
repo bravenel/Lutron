@@ -29,11 +29,11 @@ preferences {
 }
 
 def getSwitchCmd(myCmd, n) {
-	def result = input myCmd, "text", title: "Lutron Command #$n", required: true, capitalization: all
+	def result = input myCmd, "text", title: "Lutron Command #$n", required: true
 }
 
 def getSwitchName(myName, n) {
-	def result = input myName, "text", title: "Device name #$n", required: false
+	def result = input myName, "text", title: "Device name #$n", required: true
 }
 
 def selectLutron() {
