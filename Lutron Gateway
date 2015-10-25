@@ -85,6 +85,7 @@ def initialize() {
     }
     subscribe(Lutron, "msgRcvd", LutronHandler)
     subscribe(Remove, "switch.on", removeHandler)
+    state.zmp = ",XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 
 def switchHandler(evt) {
@@ -108,6 +109,13 @@ def LutronHandler(evt) {
 		def ndx = evt.value.substring(evt.value[4] == "0" ? 5 : 4, 6)
 		def device = getChildDevice(state.myDevices["$ndx"])
 		device.sendEvent(name: "switch", value: evt.value.endsWith("ON ") ? "on" : "off")
+	} else if (evt.value.startsWith("ZMP")) {						// process zmp report to tie BP to zones
+		def zmp = evt.value.substring(3)
+		for (int i = 1; i <= 32; i++) if(state.zmp[i] != zmp[i]) {
+			def device = getChildDevice(state.myDevices["$i"])
+			device.sendEvent(name: "switch", value: zmp[i] == "1" ? "on" : "off")
+		}
+		state.zmp = zmp
 	}
 }
 
