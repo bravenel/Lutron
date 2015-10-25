@@ -18,5 +18,5 @@ The required hardware consists of -
   SmartThings ThingShield, and
   Arduino RS232 shield.
   
-  The Arduino RS232 shield connects to the RA-232 with null modem cable.
+  The Arduino RS232 shield connects to the RA-RS232 with null modem cable.
   There must be jumpers from pins 2,3,4,5 to pins 14,15,16,17 on the Mega.
