@@ -105,13 +105,13 @@ def dimOnOffHandler(evt) {
 }
 
 def LutronHandler(evt) {
-	if (evt.value.startsWith("LZC") && !evt.value.endsWith("CHG")) {
+	if (evt.value.startsWith("LZC") && !evt.value.endsWith("CHG")) {  // process on/off of zone
 		def ndx = evt.value.substring(evt.value[4] == "0" ? 5 : 4, 6)
 		def device = getChildDevice(state.myDevices["$ndx"])
 		device.sendEvent(name: "switch", value: evt.value.endsWith("ON ") ? "on" : "off")
-	} else if (evt.value.startsWith("ZMP")) {						// process zmp report to tie BP to zones
+	} else if (evt.value.startsWith("ZMP")) {			  // process zmp report to tie BP to zones
 		def zmp = evt.value.substring(3)
-		for (int i = 1; i <= 32; i++) if(state.zmp[i] != zmp[i]) {
+		for (int i = 1; i <= 32; i++) if(state.zmp[i] != zmp[i]) { // state changed
 			def device = getChildDevice(state.myDevices["$i"])
 			device.sendEvent(name: "switch", value: zmp[i] == "1" ? "on" : "off")
 		}
