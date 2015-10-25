@@ -10,7 +10,7 @@ These need to be in your "My Device Types"
 
 There is the Arduino sketch, that installs on Arduino Mega 2560. 
 
-There is the Run Lutron SmartApp, that you install in the IDE.
+There is the Lutron Gateway SmartApp, that you install in the IDE.
 
 The required hardware consists of -
   Lutron RadioRA RA-RS232, 
