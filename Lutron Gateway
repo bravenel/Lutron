@@ -23,7 +23,6 @@ definition(
     iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png",
     iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png")
 
-
 preferences {
 	page(name: "selectLutron")
 }
@@ -111,7 +110,6 @@ def LutronHandler(evt) {
 		device.sendEvent(name: "switch", value: evt.value.endsWith("ON ") ? "on" : "off")
 	}
 }
-
 
 def removeHandler(evt) {
 	unsubscribe()
