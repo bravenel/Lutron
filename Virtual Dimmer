@@ -50,7 +50,7 @@ def setLevel(val){
 	else if( val > 100) val = 100
     
 	if (val == 0) sendEvent(name: "switch", value: "off")
-	sendEvent(name:"level",value:val)
+	sendEvent(name: "level", value:val)
 }
 
 def refresh() {
