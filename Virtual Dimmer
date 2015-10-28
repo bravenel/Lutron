@@ -49,7 +49,6 @@ def setLevel(val) {
 	if (val < 0) val = 0
 	else if( val > 100) val = 100
     
-	if (val == 0) sendEvent(name: "switch", value: "off")
 	sendEvent(name: "level", value: val)
 }
 
