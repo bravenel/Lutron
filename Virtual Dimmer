@@ -18,12 +18,12 @@ metadata {
 		standardTile("refresh", "device.switch", inactiveLabel: false, decoration: "flat") {
 			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
 		}        
-        controlTile("levelSliderControl", "device.level", "slider", height: 1, width: 2, inactiveLabel: false, backgroundColor:"#ffe71e") {
-		state "level", action:"switch level.setLevel"
-        }
-        valueTile("lValue", "device.level", inactiveLabel: true, height:1, width:1, decoration: "flat") {
-		state "levelValue", label:'${currentValue}%', unit:"", backgroundColor: "#53a7c0"
-        }
+		controlTile("levelSliderControl", "device.level", "slider", height: 1, width: 2, inactiveLabel: false, backgroundColor:"#ffe71e") {
+			state "level", action:"switch level.setLevel"
+		}
+        	valueTile("lValue", "device.level", inactiveLabel: true, height:1, width:1, decoration: "flat") {
+			state "levelValue", label:'${currentValue}%', unit:"", backgroundColor: "#53a7c0"
+        	}
 
 		main(["button"])
 		details(["button", "refresh","levelSliderControl","lValue"])
