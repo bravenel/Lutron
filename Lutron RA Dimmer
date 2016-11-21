@@ -1,8 +1,9 @@
 metadata {
-        definition (name: "Virtual Dimmer", namespace: "smartthings", author: "Bruce Ravenel") {
+        definition (name: "Lutron RA Dimmer", namespace: "smartthings", author: "Bruce Ravenel") {
         capability "Switch"
         capability "Refresh"
         capability "Switch Level"
+        capability "MusicPlayer"
     }
 
 	// simulator metadata
@@ -18,12 +19,12 @@ metadata {
 		standardTile("refresh", "device.switch", inactiveLabel: false, decoration: "flat") {
 			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
 		}        
-		controlTile("levelSliderControl", "device.level", "slider", height: 1, width: 2, inactiveLabel: false, backgroundColor:"#ffe71e") {
-			state "level", action:"switch level.setLevel"
-		}
-        	valueTile("lValue", "device.level", inactiveLabel: true, height:1, width:1, decoration: "flat") {
-			state "levelValue", label:'${currentValue}%', unit:"", backgroundColor: "#53a7c0"
-        	}
+        controlTile("levelSliderControl", "device.level", "slider", height: 1, width: 2, inactiveLabel: false, backgroundColor:"#ffe71e") {
+            state "level", action:"switch level.setLevel"
+        }
+        valueTile("lValue", "device.level", inactiveLabel: true, height:1, width:1, decoration: "flat") {
+            state "levelValue", label:'${currentValue}%', unit:"", backgroundColor: "#53a7c0"
+        }
 
 		main(["button"])
 		details(["button", "refresh","levelSliderControl","lValue"])
@@ -34,24 +35,28 @@ def parse(String description) {
 }
 
 def on() {
+	parent.on(this)
 	sendEvent(name: "switch", value: "on")
-	log.info "Dimmer On"
+    log.info "Dimmer On"
 }
 
 def off() {
+	parent.off(this)
 	sendEvent(name: "switch", value: "off")
-	log.info "Dimmer Off"
+    log.info "Dimmer Off"
 }
 
-def setLevel(val) {
-	log.info "setLevel $val"
+def setLevel(val){
+	parent.setLevel(this,val)
+    log.info "setLevel $val"
     
-	if (val < 0) val = 0
-	else if( val > 100) val = 100
-    
-	sendEvent(name: "level", value: val)
+    if (val < 0) val = 0
+    else if( val > 100) val = 100
+    sendEvent(name: "level", value: val)
+    if(val == 0) off() 
 }
 
 def refresh() {
-	log.info "refresh"
+	parent.refresh(this)
+    log.info "refresh"
 }
