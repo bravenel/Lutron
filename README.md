@@ -6,7 +6,8 @@ There are three Device Types that you need to install in the IDE -
   Lutron RA Switch, 
   Lutron RA Dimmer.
   
-These need to be in your "My Device Types"
+These need to be in your "My Device Types", published.  
+Edit the device type of your ThingShield device to be Lutron Shield.
 
 There is the Arduino sketch, that installs on Arduino Mega 2560. 
 
