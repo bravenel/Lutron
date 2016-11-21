@@ -17,10 +17,9 @@
  *  Date: 2013-05-01
  */
 metadata {
-	definition (name: "On/Off Button Tile", namespace: "smartthings", author: "SmartThings") {
+	definition (name: "Lutron RA Switch", namespace: "smartthings", author: "SmartThings") {
 		capability "Actuator"
 		capability "Switch"
-		capability "Sensor"
 	}
 
 	// simulator metadata
@@ -42,10 +41,12 @@ def parse(String description) {
 }
 
 def on() {
+	parent.on(this)
 	sendEvent(name: "switch", value: "on")
 }
 
 def off() {
+	parent.off(this)
 	sendEvent(name: "switch", value: "off")
 }
 
