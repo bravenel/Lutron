@@ -13,7 +13,7 @@
  */
 metadata {
 	definition (name: "Lutron Shield", namespace: "bravenel", author: "Bruce Ravenel") {
-        capability "musicPlayer"
+        capability "MusicPlayer"
         
         command "hello"
         command "sendMsg"
