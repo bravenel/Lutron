@@ -38,7 +38,7 @@ def getName(myName, n) {
 def selectLutron() {
 	dynamicPage(name: "selectLutron", title: "Lutron Gateway and Devices", uninstall: true, install: true) {
 		section("") {
-			input "Lutron", "capability.relaySwitch", title: "Lutron gateway", required: true, multiple: false
+			input "Lutron", "capability.musicPlayer", title: "Lutron gateway", required: true, multiple: false
 			input "Remove", "capability.momentary", title: "Remove button", required: true, multiple: false
 			input "howMany", "number", title: "How many Lutron devices?", required: true, submitOnChange: true
 		}
@@ -65,43 +65,50 @@ def updated() {
 
 def initialize() {
 	state.myDevices = [:]
+    state.reverse = [:]
 	for (int i = 0 ; i < howMany; i++) {
         def thisCmd = settings.find {it.key == "dCmd$i"}
         def thisName = settings.find {it.key == "dName$i"}
     	def deviceId = "Lutron" + "$i-" + app.id
         def myDevice = getChildDevice(deviceId)
-        if(!myDevice) def childDevice = addChildDevice("smartthings", thisCmd.value[1] in ['d', 'D'] ? "Virtual Dimmer" : "On/Off Button Tile", deviceId, null, [label: thisName.value])
+        if(!myDevice) def childDevice = addChildDevice("smartthings", thisCmd.value[1] in ['d', 'D'] ? "Lutron RA Dimmer" : "Lutron RA Switch", deviceId, null, [label: thisName.value])
         myDevice = getChildDevice(deviceId)
         myDevice.name = thisCmd.value
         if(myDevice.name[0] in ['s', 'S']) {        //  SSI or SDL, build map based on Lutron zone #
         	def iloc = myDevice.name.indexOf(',') + 1
-		def ndx = myDevice.name.substring(iloc).toInteger()
-		state.myDevices << ["$ndx":deviceId]
-        }
-        if(myDevice.name[1] in ['d', 'D']) {		//  SDL, dimmer
-        	subscribe(myDevice, "level", dimmerHandler)
-		subscribe(myDevice, "switch", dimOnOffHandler)
-        } else subscribe(myDevice, "switch", switchHandler)
+			def ndx = myDevice.name.substring(iloc).toInteger()
+			state.myDevices << ["$ndx":deviceId]
+        } 
+        state.reverse << ["$deviceId":myDevice.name]
     }
     subscribe(Lutron, "msgRcvd", LutronHandler)
     subscribe(Remove, "switch.on", removeHandler)
     state.zmp = ",XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 }
 
-def switchHandler(evt) {
-	def myDev = evt.device
-	Lutron.sendMsg("$myDev.name,${evt.value == "on" ? "on" : "off" }")
+def on(childDevice) {
+	def devName = childDevice.device.deviceNetworkId
+    def devId = state.reverse["$devName"]
+    def device = getChildDevice(devName)
+	if(devId[1] == "d") Lutron.sendMsg("$devId," + (device.currentLevel == 0 ? "100" : "$device.currentLevel"))
+    else Lutron.sendMsg("$devId,on")
 }
 
-def dimmerHandler(evt) {
-	def myDev = evt.device
-	Lutron.sendMsg("$myDev.name,$evt.value")
+def off(childDevice) {
+	def devName = childDevice.device.deviceNetworkId
+    def devId = state.reverse["$devName"]
+	if(devId[1] == "d") Lutron.sendMsg("$devId,0")
+    else Lutron.sendMsg("$devId,off")
 }
 
-def dimOnOffHandler(evt) {
-	def myDev = evt.device
-	def level = myDev.currentLevel ?: 100
-	Lutron.sendMsg("$myDev.name,${evt.value == "on" ? "$level" : "0" }")
+def setLevel(childDevice, level) {
+	def devName = childDevice.device.deviceNetworkId
+    def devId = state.reverse["$devName"]
+	Lutron.sendMsg("$devId,$level")
+}
+
+def refresh(childDevice) {
+	return
 }
 
 def LutronHandler(evt) {
